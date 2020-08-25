@@ -1,0 +1,31 @@
+html,
+body,
+#viewDiv {
+    font-family: Avenir Next W00;
+    font-size: 14px;
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+}
+
+.action {
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+#anonymousPanel {
+    padding: 5px; 
+    text-align: center;
+    background-color: black;
+    color: white;
+}
+
+#personalizedPanel {
+    padding: 5px; 
+    text-align: center;
+    background-color: black;
+    color: white;
+}
