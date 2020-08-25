@@ -6,27 +6,8 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" />
     <title>SCMSN Stewardship Layers</title>
     <link rel="stylesheet" href="https://js.arcgis.com/4.12/esri/css/main.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/main.css') }}">
     <script src="https://js.arcgis.com/4.12/"></script>
-
-    <style>
-        html,
-        body,
-        #viewDiv {
-            font-family: Avenir Next W00;
-            font-size: 14px;
-            width: 100%;
-            height: 100%;
-            margin: 0px;
-            padding: 0px;
-        }
-
-        .action {
-            color: blue;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-    </style>
 
     <script>
         require([
@@ -97,76 +78,91 @@
                         center: [-122.106, 37.358]
                     });
 
-
-                    var SCVOSA_CulturalResources_yn = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/6'
-                    });
-                    var MROSD_CulturalResources_yn = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/5'
-                    });                    
-                    var BLM_FuelsReduction = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/8'
-                    });
-                    var GirlScouts_FuelsReduction = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/9'
-                    });
-                    var GirlScouts_FuelsReduction_yn = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/10'
-                    });
-                    var JRBP_FuelsReduction = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/11'
-                    });
-                    var SanMateo_FuelsReduction = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/12'
-                    });
-                    var SantaCruzCountyParks_FuelsReduction_yn = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/13'
-                    });
-                    var UCSC_FuelsReduction = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/14'
-                    });
-                    var MROSD_Grazing = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/16'
-                    });
-                    var SCVOSA_Grazing = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/17'
-                    });
-                    var SCVOSA_Grazing2 = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/18'
-                    });
-                    var UCSC_Grazing = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/19'
-                    });
-                    var SantaClaraValley_HabitatPlan = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/20'
-                    });
-                    var UCSC_Indigenous_estimate = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/21'
-                    });
-                    var SanMateo_Invasives = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/23'
-                    });
-                    var SCVOSA_Invasives_yn = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/24'
-                    });
-                    var UCSC_Invasives_estimate = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/25'
-                    });
-                    var JRBP_Invasives = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/26'
-                    });
-                    var all_timber = new FeatureLayer({
-                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/54'
-                    });
                     var MROSD_Agriculture = new FeatureLayer({
                         url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/1'
                     });
                     var SCOVSA_Agriculture = new FeatureLayer({
                         url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/2'
                     });
-                    var UCSC_Agriculture = new FeatureLayer({
+                    var StateParks_Agriculture = new FeatureLayer({
                         url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/3'
+                    })
+                    var UCSC_Agriculture = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/4'
                     });
+                    var MROSD_CulturalResources_yn = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/6'
+                    });
+                    var SCVOSA_CulturalResources_yn = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/7'
+                    });                    
+                    var BLM_FuelsReduction = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/9'
+                    });
+                    var GirlScouts_FuelsReduction = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/10'
+                    });
+                    var GirlScouts_FuelsReduction_yn = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/11'
+                    });
+                    var JRBP_FuelsReduction = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/12'
+                    });
+                    var SanMateo_FuelsReduction = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/13'
+                    });
+                    var SantaCruzCountyParks_FuelsReduction_yn = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/14'
+                    });
+                    var StateParks_FuelsReduction = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/15'
+                    })
+                    var StateParks_FuelsReduction_pts = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/16'
+                    })
+                    var UCSC_FuelsReduction = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/17'
+                    });
+                    var MROSD_Grazing = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/19'
+                    });
+                    var SCVOSA_Grazing = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/20'
+                    });
+                    var SCVOSA_Grazing2 = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/21'
+                    });
+                    var UCSC_Grazing = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/22'
+                    });
+                    var SantaClaraValley_HabitatPlan = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/23'
+                    });
+                    var UCSC_Indigenous_estimate = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/25'
+                    });
+                    var StateParks_Indigenous = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/26'
+                    })
+                    var SanMateo_Invasives = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/28'
+                    });
+                    var SCVOSA_Invasives_yn = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/29'
+                    });
+                    var StateParks_Invasives = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/30'
+                    })
+                    var UCSC_Invasives_estimate = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/31'
+                    });
+                    var JRBP_Invasives = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/32'
+                    });
+                    var all_timber = new FeatureLayer({
+                        url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/67'
+                    });
+
 
                     var layerListItem = {};
                     var layerList = new LayerList({
@@ -181,15 +177,15 @@
                     // Define group layers
                     var agriculture_group = new GroupLayer({
                         title: "Agriculture",
-                        layers: [MROSD_Agriculture,SCOVSA_Agriculture,UCSC_Agriculture]
+                        layers: [MROSD_Agriculture,SCOVSA_Agriculture,StateParks_Agriculture,UCSC_Agriculture]
                     });
                     var culturalresources_group = new GroupLayer({
                         title: "Cultural Resources",
-                        layers: [SCVOSA_CulturalResources_yn,MROSD_CulturalResources_yn]
+                        layers: [MROSD_CulturalResources_yn,SCVOSA_CulturalResources_yn]
                     });
                     var fuelsreduction_group = new GroupLayer({
                         title: "Fuels Reduction Treatments",
-                        layers: [BLM_FuelsReduction,JRBP_FuelsReduction,UCSC_FuelsReduction,GirlScouts_FuelsReduction,SanMateo_FuelsReduction,GirlScouts_FuelsReduction_yn,SantaCruzCountyParks_FuelsReduction_yn]
+                        layers: [BLM_FuelsReduction,GirlScouts_FuelsReduction,GirlScouts_FuelsReduction_yn,JRBP_FuelsReduction,SantaCruzCountyParks_FuelsReduction_yn,SanMateo_FuelsReduction,StateParks_FuelsReduction,StateParks_FuelsReduction_pts,UCSC_FuelsReduction]
                     });
                     var grazing_group = new GroupLayer({
                         title: "Grazing",
@@ -201,11 +197,11 @@
                     });
                     var indigenous_group = new GroupLayer({
                         title: "Indigenous Stewardship Practices",
-                        layers: [UCSC_Indigenous_estimate]
+                        layers: [StateParks_Indigenous,UCSC_Indigenous_estimate]
                     });
                     var invasives_group = new GroupLayer({
                         title: "Invasives Species Management",
-                        layers: [SanMateo_Invasives, SCVOSA_Invasives_yn, UCSC_Invasives_estimate, JRBP_Invasives]
+                        layers: [JRBP_Invasives,SanMateo_Invasives, SCVOSA_Invasives_yn, StateParks_Invasives, UCSC_Invasives_estimate]
                     }); 
                     var timber_group = new GroupLayer({
                         title: "Timber Harvest",
@@ -230,11 +226,11 @@
 </head>
 
 <body>
-    <div id="anonymousPanel" style="display: block; padding: 5px; text-align: center;">
+    <div id="anonymousPanel" style="display: block;">
         <span id="sign-in" class="action">Sign In</span> to view SCMSN Stewardship Layers.
     </div>
 
-    <div id="personalizedPanel" style="display: none; padding: 5px; text-align: center;">
+    <div id="personalizedPanel" style="display: block;">
         Welcome <span id="userId" style="font-weight: bold;"></span> &nbsp;-&nbsp;
         <span id="sign-out" class="action">Sign Out</span>
     </div>
