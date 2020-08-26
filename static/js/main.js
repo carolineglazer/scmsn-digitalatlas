@@ -67,12 +67,12 @@ require([
 
             var templateSurveys = {
                 title: "Stewardship Survey",
-                content: "{MNG_AGENCY}"
+                content: "{*}"
             };
 
             var templateEI = {
                 title: "Ecosystem Integrity",
-                content: "{PCT}"
+                content: "{*}"
             }
 
             // Get feature layers for SCMSN Stewardship Survey Responses
