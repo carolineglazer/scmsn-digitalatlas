@@ -17,13 +17,20 @@ body,
 }
 
 #anonymousPanel {
-    padding: 5px; 
+    display: block;
+    position: relative;
+    top: 40%;
+    width: 25%;
+    margin: 0 auto;
+    padding: 20px; 
     text-align: center;
     background-color: black;
+    border-radius: 5px;
     color: white;
 }
 
 #personalizedPanel {
+    display: none;
     padding: 5px; 
     text-align: center;
     background-color: black;
