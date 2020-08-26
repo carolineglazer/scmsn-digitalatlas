@@ -101,14 +101,23 @@ require([
                 view: view,
                 listItemCreatedFunction: function(event) {
                     var item = event.item;
+                    // build legends for all listitems within groups
                     if (item.layer.type != "group") {
-                        //don't show legend twice
-                        item.panel = {
-                            content: "legend",
-                            open: false
+                        // open legend for patch indicators
+                        if (item.layer.title.startsWith("Ecosystem Integrity Indicators")) {
+                            item.panel = {
+                                content: "legend",
+                                open: true
+                            }
+                        // close legend otherwise
+                        } else {
+                            item.panel = {
+                                content: "legend",
+                                open: false
+                            }
                         };
                     };
-                    // Stewardship Surveys layers not displayed by default
+                    // Stewardship Surveys layers not visible by default
                     if (item.layer.type == "group" && item.title == "Stewardship Surveys") {
                         console.log(item)
                         item.visible = false;
