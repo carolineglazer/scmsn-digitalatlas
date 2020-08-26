@@ -6,13 +6,14 @@ require([
     "esri/Map",
     "esri/views/MapView",
     "esri/layers/FeatureLayer",
+    "esri/layers/TileLayer",
     "esri/layers/GroupLayer",
     "esri/widgets/LayerList",
     "dojo/on",
     "dojo/dom"
 ], function(
     Portal, OAuthInfo, identityManager, Collection, Map, MapView, 
-    FeatureLayer, GroupLayer, LayerList, on, dom) {
+    FeatureLayer, TileLayer, GroupLayer, LayerList, on, dom) {
 
     // ArcGIS Enterprise Portals are also supported
     var portalUrl = "https://www.arcgis.com/sharing";
@@ -65,15 +66,19 @@ require([
                 center: [-122.106, 37.358]
             });
 
+            // Popup templates (*not* popupTemplate)
             var templateSurveys = {
                 title: "Stewardship Survey",
-                content: "{*}"
-            };
-
+                content: "{*}" };
             var templateEI = {
-                title: "Ecosystem Integrity",
-                content: "{*}"
-            }
+                title: "Patch-Level Ecosystem Integrity Metrics",
+                content: "{*}" };
+            var templateNDVI = {
+                title: "NDVI",
+                content: "{*}" };
+            var templateNIRv = {
+                title: "NIRv",
+                content: "{*}" };            
 
             // Get feature layers for SCMSN Stewardship Survey Responses
             surveysArray = new Collection;
@@ -89,12 +94,24 @@ require([
 
             // Get feature layers for Ecosystem Integrity Group
             ecosystemIntegrityArray = new Collection;
+            var ei_fl2 = new TileLayer({
+                url: 'https://tiles.arcgis.com/tiles/7CRlmWNEbeCqEJ6a/arcgis/rest/services/NDVI/MapServer',
+                outFields: ["*"],
+                popupTemplate: templateNDVI
+            })
+            ecosystemIntegrityArray.add(ei_fl2);
+            var ei_fl3 = new TileLayer({
+                url: 'https://tiles.arcgis.com/tiles/7CRlmWNEbeCqEJ6a/arcgis/rest/services/NIRv/MapServer',
+                outFields: ["*"],
+                popupTemplate: templateNIRv
+            })
+            ecosystemIntegrityArray.add(ei_fl3);
             var ei_fl = new FeatureLayer({
                 url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/Ecosystem_Integrity_Indicators_08122020/FeatureServer',
                 outFields: ["*"],
                 popupTemplate: templateEI
             })
-            ecosystemIntegrityArray.add(ei_fl);
+            ecosystemIntegrityArray.add(ei_fl);            
 
             // Initialize the layer list widget
             var layerList = new LayerList({
@@ -103,8 +120,8 @@ require([
                     var item = event.item;
                     // build legends for all listitems within groups
                     if (item.layer.type != "group") {
-                        // open legend for patch indicators
-                        if (item.layer.title.startsWith("Ecosystem Integrity Indicators")) {
+                        // open legend for survey layers
+                        if (item.layer.title.startsWith("Ecosystem Integrity Indicator")) {
                             item.panel = {
                                 content: "legend",
                                 open: true
@@ -119,6 +136,10 @@ require([
                     };
                     // Stewardship Surveys layers not visible by default
                     if (item.layer.type == "group" && item.title == "Stewardship Surveys") {
+                        item.visible = false;
+                    }
+                    // NDVI and NIRv layers not visible by default
+                    if (item.layer.title == "NDVI" || item.layer.title == "NIRv") {
                         item.visible = false;
                     }
                     // Fix the titles for Stewardship Survey Aggregated Data
