@@ -65,10 +65,15 @@ require([
                 center: [-122.106, 37.358]
             });
 
-            var template = {
-                title: "Test Popup",
+            var templateSurveys = {
+                title: "Stewardship Survey",
                 content: "{MNG_AGENCY}"
             };
+
+            var templateEI = {
+                title: "Ecosystem Integrity",
+                content: "{PCT}"
+            }
 
             // Get feature layers for SCMSN Stewardship Survey Responses
             surveysArray = new Collection;
@@ -76,11 +81,20 @@ require([
                 var featureLayer = new FeatureLayer({
                     url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/Stewardship_Data_Aggregated_by_Stewardship_Activity/FeatureServer/'+i.toString(10),
                     outFields: ["*"],
-                    popupTemplate: template
+                    popupTemplate: templateSurveys
                 })
                 console.log(featureLayer.url)
                 surveysArray.add(featureLayer);
             }
+
+            // Get feature layers for Ecosystem Integrity Group
+            ecosystemIntegrityArray = new Collection;
+            var ei_fl = new FeatureLayer({
+                url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/Ecosystem_Integrity_Indicators_08122020/FeatureServer',
+                outFields: ["*"],
+                popupTemplate: templateEI
+            })
+            ecosystemIntegrityArray.add(ei_fl);
 
             // Initialize the layer list widget
             var layerList = new LayerList({
@@ -105,8 +119,12 @@ require([
             // Define group layers
             var surveyGroup = new GroupLayer({
                 title: "Stewardship Surveys",
-                layers: surveysArray
-            })
+                layers: surveysArray,
+            });
+            var ecosystemIntegrityGroup = new GroupLayer({
+                title: "Ecosystem Integrity",
+                layers: ecosystemIntegrityArray,
+            });
 
             // Add layer list widget below other elements in the top right corner of the view
             view.ui.add(layerList, {
@@ -114,7 +132,8 @@ require([
             });
 
             // Add everything to the map
-            map.add(surveyGroup)    
+            map.add(surveyGroup);
+            map.add(ecosystemIntegrityGroup);  
 
             // var MROSD_Agriculture = new FeatureLayer({
             //     url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/1'
