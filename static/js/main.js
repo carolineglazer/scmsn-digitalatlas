@@ -108,6 +108,11 @@ require([
                             open: false
                         };
                     };
+                    // Stewardship Surveys layers not displayed by default
+                    if (item.layer.type == "group" && item.title == "Stewardship Surveys") {
+                        console.log(item)
+                        item.visible = false;
+                    }
                     // Fix the titles for Stewardship Survey Aggregated Data
                     // if (item.layer.title.startsWith("Stewardship Data Aggregated") && item.layer.title.length > 54) {
                     //     item.layer.title = item.layer.title.substring(54);
