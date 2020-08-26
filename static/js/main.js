@@ -119,7 +119,6 @@ require([
                     };
                     // Stewardship Surveys layers not visible by default
                     if (item.layer.type == "group" && item.title == "Stewardship Surveys") {
-                        console.log(item)
                         item.visible = false;
                     }
                     // Fix the titles for Stewardship Survey Aggregated Data
