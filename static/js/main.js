@@ -77,11 +77,10 @@ require([
                     url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/Stewardship_Data_Aggregated_by_Stewardship_Activity/FeatureServer/'+i.toString(10),
                     outFields: ["*"],
                     popupTemplate: template
-                });
+                })
+                console.log(featureLayer.url)
                 surveysArray.add(featureLayer);
             }
-
-            console.log(surveysArray)
 
             // Initialize the layer list widget
             var layerList = new LayerList({
@@ -90,20 +89,18 @@ require([
                     var item = event.item;
                     if (item.layer.type != "group") {
                         //don't show legend twice
-                        console.log(item.layer.title)
                         item.panel = {
                             content: "legend",
                             open: false
                         };
                     };
                     // Fix the titles for Stewardship Survey Aggregated Data
-                    if (item.layer.title.startsWith("Stewardship Data Aggregated") && item.layer.title.length > 54) {
-                        item.layer.title = item.layer.title.substring(54);
-                        console.log(item.layer.title)
-                    };   
+                    // if (item.layer.title.startsWith("Stewardship Data Aggregated") && item.layer.title.length > 54) {
+                    //     item.layer.title = item.layer.title.substring(54);
+                    //     console.log(item.layer.title)
+                    // };   
                 }
             });
-
 
             // Define group layers
             var surveyGroup = new GroupLayer({
@@ -117,7 +114,7 @@ require([
             });
 
             // Add everything to the map
-            map.add(surveyGroup)
+            map.add(surveyGroup)    
 
             // var MROSD_Agriculture = new FeatureLayer({
             //     url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/1'
