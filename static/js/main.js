@@ -3,19 +3,23 @@ require([
     "esri/identity/OAuthInfo",
     "esri/identity/IdentityManager",
     "esri/core/Collection",
+    "esri/core/promiseUtils",
     "esri/Map",
+    "esri/Graphic",
     "esri/views/MapView",
     "esri/layers/FeatureLayer",
     "esri/layers/TileLayer",
     "esri/layers/GroupLayer",
     "esri/layers/GraphicsLayer",
+    "esri/geometry/geometryEngine",
     "esri/widgets/LayerList",
+    "esri/widgets/Slider",
     "esri/widgets/Sketch/SketchViewModel",
     "dojo/on",
     "dojo/dom"
 ], function(
-    Portal, OAuthInfo, identityManager, Collection, Map, MapView, FeatureLayer, 
-    TileLayer, GroupLayer, GraphicsLayer, LayerList, SketchViewModel, on, dom) {
+    Portal, OAuthInfo, identityManager, Collection, promiseUtils, Map, Graphic, MapView, FeatureLayer, 
+    TileLayer, GroupLayer, GraphicsLayer, geometryEngine, LayerList, Slider, SketchViewModel, on, dom) {
 
     // ArcGIS Enterprise Portals are also supported
     var portalUrl = "https://www.arcgis.com/sharing";
@@ -58,9 +62,6 @@ require([
             dom.byId('viewDiv').style.display = 'flex';
             dom.byId('queryDiv').style.display = 'block';
 
-            // Define GraphicsLayer for sketching polygons
-            var glayer = new GraphicsLayer();
-
             var map = new Map({
                 basemap: "gray"
             });
@@ -72,10 +73,188 @@ require([
                 center: [-122.106, 37.358]
             });
 
-            // var sketchViewModel = new SketchViewModel({
-            //     layer: glayer,
-            //     view: view
-            // });
+            // Define GraphicsLayer for sketching polygons
+            var sketchLayer = new GraphicsLayer();
+            var bufferLayer = new GraphicsLayer();
+
+            var sketchGeometry = null;
+            var sketchViewModel = new SketchViewModel({
+                layer: sketchLayer,
+                defaultUpdateOptions: {
+                    tool: "reshape",
+                    toggleToolOnClick: false
+                },
+                view: view,
+                defaultCreateOptions: { hasZ: false }
+            });
+
+            // Geometry drawing stuff - sketchViewModel
+            sketchViewModel.on("create", function (event) {
+                if (event.state === "complete") {
+                    sketchGeometry = event.graphic.geometry;
+                    runQuery();
+                }
+            });
+            sketchViewModel.on("update", function(event) {
+                if (event.state === "complete") {
+                    sketchGeometry = event.graphics[0].geometry;
+                    runQuery();
+                }
+            });
+
+            var mapLayer = null;
+            var mapLayerView = null;
+            var bufferSize = 0;
+
+            // draw geometry buttons - use the selected geometry to sktech
+            document
+                .getElementById("point-geometry-button")
+                .addEventListener("click", geometryButtonsClickHandler);
+            document
+                .getElementById("line-geometry-button")
+                .addEventListener("click", geometryButtonsClickHandler);
+            document
+                .getElementById("polygon-geometry-button")
+                .addEventListener("click", geometryButtonsClickHandler);
+            function geometryButtonsClickHandler(event) {
+                var geometryType = event.target.value;
+                // Assisgn mapLayer (the layer which is queried after a polygon is drawn) once user click on a geometry type
+                mapLayer = map.allLayers.find(function (layer) {
+                    return layer.title === "Ecosystem Integrity Indicators 08122020 - All PCTs";
+                });
+                mapLayer.outFields = ["*"]
+                view.whenLayerView(mapLayer).then(function (layerView) {
+                    mapLayerView = layerView;
+                })
+                clearGeometry();
+                sketchViewModel.create(geometryType);
+            }
+
+            // Define buffer value slider, min/max in meters
+            var bufferNumSlider = new Slider({
+                container: "bufferNum",
+                min: 0,
+                max: 2500,
+                steps: 5,
+                visibleElements: {
+                    labels: true
+                },
+                precision: 0,
+                labelFormatFunction: function (value, type) {
+                    return value.toString() + "m";
+                },
+                values: [0]
+            });
+            // get user entered values for buffer
+            bufferNumSlider.on(
+                ["thumb-change", "thumb-drag"],
+                bufferVariablesChanged
+            );
+            function bufferVariablesChanged(event) {
+                bufferSize = event.value;
+                runQuery();
+            }
+            // Clear the geometry and set the default renderer
+            document
+                .getElementById("clearGeometry")
+                .addEventListener("click", clearGeometry);
+
+            // Clear the geometry and set the default renderer
+            function clearGeometry() {
+                sketchGeometry = null;
+                sketchViewModel.cancel();
+                sketchLayer.removeAll();
+                bufferLayer.removeAll();
+                clearHighlighting();
+                //clearChart();
+                document.getElementById("count").innerHTML = "0";
+                resultDiv.style.display = "none";
+            }
+
+            // set the geometry query on the visible MapLayerView
+            var debouncedRunQuery = promiseUtils.debounce(function () {
+                if (!sketchGeometry) {
+                    return;
+                }
+
+                resultDiv.style.display = "block";
+                updateBufferGraphic(bufferSize);
+                return promiseUtils.eachAlways([
+                    queryStatistics(),
+                    updateMapLayer()
+                ]);
+            });
+
+            function runQuery() {
+                debouncedRunQuery().catch((error) => {
+                    if (error.name === "AbortError") {
+                        return;
+                    }
+                    console.error(error);
+                });
+            }
+
+            // Set the renderer with objectIds
+            var highlight = null;
+            function clearHighlighting() {
+                if (highlight) {
+                    highlight.remove();
+                    highlight = null;
+                }
+            }
+
+            function highlightObjects(results) {
+                clearHighlighting();
+                highlight = mapLayerView.highlight(results.features);
+            }
+
+            // update the graphic with buffer
+            function updateBufferGraphic(buffer) {
+                //add a polygon graphic for the buffer
+                if (buffer > 0) {
+                    var bufferGeometry = geometryEngine.geodesicBuffer(
+                        sketchGeometry,
+                        buffer,
+                        "meters"
+                    );
+                    if (bufferLayer.graphics.length === 0) {
+                        bufferLayer.add(
+                            new GraphicsLayer({
+                                geometry: bufferGeometry,
+                                sybmol: sketchViewModel.polygonSymbol
+                            })
+                        );
+                    } else {
+                        bufferLayer.graphics.getItemAt(0).geometry = bufferGeometry;
+                    }
+                } else {
+                    bufferLayer.removeAll();
+                }
+            }
+
+            function updateMapLayer() {
+                var query = mapLayer.createQuery();
+                query.geometry = sketchGeometry;
+                query.distance = bufferSize;
+                return mapLayer.queryFeatures(query).then(highlightObjects);
+            }
+
+            // var yearChart = null;
+            // var materialChart = null;
+
+            function queryStatistics() {
+                //var statDefintions = [{}]
+                var query = mapLayerView.layer.createQuery();
+                query.geometry = sketchGeometry;
+                query.distance = bufferSize;
+                //query.outStatistics = statDefintions;
+                return mapLayerView.queryFeatures(query).then(function (result) {
+                    var allStats = result.features[0].attributes;
+                    document.getElementById("count").innerHTML = result.features.length;
+                    console.log(result.features);
+                    //updateChart
+                }, console.error);
+            }
 
             // Popup templates (*not* popupTemplate)
             var templateSurveys = {
@@ -130,7 +309,7 @@ require([
                 listItemCreatedFunction: function(event) {
                     var item = event.item;
                     // build legends for all listitems within groups
-                    if (item.layer.type != "group") {
+                    if (item.layer.type == "feature") {
                         // open legend for survey layers
                         if (item.layer.title.startsWith("Ecosystem Integrity Indicator")) {
                             item.panel = {
@@ -176,10 +355,14 @@ require([
                 position: "top-right"
             });
             view.ui.add([queryDiv], "bottom-left");
+            view.ui.add([resultDiv], "bottom-left")
 
             // Add everything to the map
             map.add(surveyGroup);
-            map.add(ecosystemIntegrityGroup);  
+            map.add(ecosystemIntegrityGroup)
+            // Add sketch layer to view.map
+            view.map.addMany([bufferLayer, sketchLayer]);
+
 
             // var MROSD_Agriculture = new FeatureLayer({
             //     url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/1'
