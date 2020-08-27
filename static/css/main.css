@@ -36,3 +36,42 @@ body,
     background-color: black;
     color: white;
 }
+
+#queryDiv,
+#resultDiv {
+    min-width: 250px;
+    font-size: 14px;
+    padding: 10px;
+    display: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.geometry-options {
+    display: flex;
+    flex-direction: row;
+}
+
+.geometry-button {
+    flex: 1;
+    border-style: solid;
+    border-width: 1px;
+    border-image: none;
+}
+
+.geometry-button-selected {
+    background: #4c4c4c;
+    color: #fff;
+}
+
+#bufferNum {
+   width: 90%;
+   margin: 2.5em auto 0;
+}
+
+.count {
+   white-space: nowrap;
+   font-size: 14px;
+   font-weight: bold;
+   display: inline-block;
+}

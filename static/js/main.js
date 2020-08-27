@@ -10,12 +10,12 @@ require([
     "esri/layers/GroupLayer",
     "esri/layers/GraphicsLayer",
     "esri/widgets/LayerList",
-    "esri/widgets/Sketch",
+    "esri/widgets/Sketch/SketchViewModel",
     "dojo/on",
     "dojo/dom"
 ], function(
     Portal, OAuthInfo, identityManager, Collection, Map, MapView, FeatureLayer, 
-    TileLayer, GroupLayer, GraphicsLayer, LayerList, Sketch, on, dom) {
+    TileLayer, GroupLayer, GraphicsLayer, LayerList, SketchViewModel, on, dom) {
 
     // ArcGIS Enterprise Portals are also supported
     var portalUrl = "https://www.arcgis.com/sharing";
@@ -56,6 +56,7 @@ require([
         portal.load().then(function() {
 
             dom.byId('viewDiv').style.display = 'flex';
+            dom.byId('queryDiv').style.display = 'block';
 
             // Define GraphicsLayer for sketching polygons
             var glayer = new GraphicsLayer();
@@ -71,12 +72,10 @@ require([
                 center: [-122.106, 37.358]
             });
 
-            var sketch = new Sketch({
-                layer: glayer,
-                view: view,
-                // graphic will be selected as soon as it is created
-                creationMode: "update"
-            });
+            // var sketchViewModel = new SketchViewModel({
+            //     layer: glayer,
+            //     view: view
+            // });
 
             // Popup templates (*not* popupTemplate)
             var templateSurveys = {
@@ -176,9 +175,7 @@ require([
             view.ui.add(layerList, {
                 position: "top-right"
             });
-            view.ui.add(sketch, {
-                position: "bottom-left"
-            });
+            view.ui.add([queryDiv], "bottom-left");
 
             // Add everything to the map
             map.add(surveyGroup);
