@@ -8,12 +8,14 @@ require([
     "esri/layers/FeatureLayer",
     "esri/layers/TileLayer",
     "esri/layers/GroupLayer",
+    "esri/layers/GraphicsLayer",
     "esri/widgets/LayerList",
+    "esri/widgets/Sketch",
     "dojo/on",
     "dojo/dom"
 ], function(
-    Portal, OAuthInfo, identityManager, Collection, Map, MapView, 
-    FeatureLayer, TileLayer, GroupLayer, LayerList, on, dom) {
+    Portal, OAuthInfo, identityManager, Collection, Map, MapView, FeatureLayer, 
+    TileLayer, GroupLayer, GraphicsLayer, LayerList, Sketch, on, dom) {
 
     // ArcGIS Enterprise Portals are also supported
     var portalUrl = "https://www.arcgis.com/sharing";
@@ -55,6 +57,9 @@ require([
 
             dom.byId('viewDiv').style.display = 'flex';
 
+            // Define GraphicsLayer for sketching polygons
+            var glayer = new GraphicsLayer();
+
             var map = new Map({
                 basemap: "gray"
             });
@@ -64,6 +69,13 @@ require([
                 map: map,
                 zoom: 10,
                 center: [-122.106, 37.358]
+            });
+
+            var sketch = new Sketch({
+                layer: glayer,
+                view: view,
+                // graphic will be selected as soon as it is created
+                creationMode: "update"
             });
 
             // Popup templates (*not* popupTemplate)
@@ -163,6 +175,9 @@ require([
             // Add layer list widget below other elements in the top right corner of the view
             view.ui.add(layerList, {
                 position: "top-right"
+            });
+            view.ui.add(sketch, {
+                position: "bottom-left"
             });
 
             // Add everything to the map
