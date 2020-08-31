@@ -60,7 +60,7 @@ require([
         portal.load().then(function() {
 
             dom.byId('viewDiv').style.display = 'flex';
-            dom.byId('queryDiv').style.display = 'block';
+            dom.byId('drawDiv').style.display = 'block';
 
             var map = new Map({
                 basemap: "gray"
@@ -73,10 +73,37 @@ require([
                 center: [-122.106, 37.358]
             });
 
-            // Define GraphicsLayer for sketching polygons
+            // Define GraphicsLayers for sketching polygons
             var sketchLayer = new GraphicsLayer();
             var bufferLayer = new GraphicsLayer();
 
+            var mapLayer = null;
+            var mapLayerView = null;
+            var bufferSize = 0;
+
+            // Assisgn mapLayer (the layer which is queried after a polygon is drawn) once drawDiv is clicked
+            document
+                .getElementById("drawDiv")
+                .addEventListener("click", drawDivClickHandler);
+            function drawDivClickHandler(event) {
+                drawDiv.style.display = "none";
+                queryDiv.style.display = "block";
+                mapLayer = map.allLayers.find(function(layer) {
+                    return layer.title === "Ecosystem Integrity Indicators 08122020 - All PCTs";
+                });
+                view.whenLayerView(mapLayer).then(function (layerView) {
+                    mapLayerView = layerView;
+                    mapLayer.outFields = ["*"];
+                })
+                .catch(function(){
+                    document.getElementById("drawDiv").style.display = "block";
+                    alert("Please wait for map to finish loading");
+                    document.getElementById("queryDiv").style.display = "none";
+                })
+            };
+
+            
+            // Use SketchViewModel to draw polygons that are used as a query
             var sketchGeometry = null;
             var sketchViewModel = new SketchViewModel({
                 layer: sketchLayer,
@@ -102,10 +129,6 @@ require([
                 }
             });
 
-            var mapLayer = null;
-            var mapLayerView = null;
-            var bufferSize = 0;
-
             // draw geometry buttons - use the selected geometry to sktech
             document
                 .getElementById("point-geometry-button")
@@ -116,16 +139,14 @@ require([
             document
                 .getElementById("polygon-geometry-button")
                 .addEventListener("click", geometryButtonsClickHandler);
+            document
+                .getElementById("toggle")
+                .addEventListener("click", function() {
+                    document.getElementById("queryDiv").style.display = "none";
+                    document.getElementById("drawDiv").style.display = "block";
+                });
             function geometryButtonsClickHandler(event) {
                 var geometryType = event.target.value;
-                // Assisgn mapLayer (the layer which is queried after a polygon is drawn) once user click on a geometry type
-                mapLayer = map.allLayers.find(function (layer) {
-                    return layer.title === "Ecosystem Integrity Indicators 08122020 - All PCTs";
-                });
-                mapLayer.outFields = ["*"]
-                view.whenLayerView(mapLayer).then(function (layerView) {
-                    mapLayerView = layerView;
-                })
                 clearGeometry();
                 sketchViewModel.create(geometryType);
             }
@@ -244,6 +265,7 @@ require([
 
             function queryStatistics() {
                 //var statDefintions = [{}]
+                console.log("mapLayerView: "+mapLayerView);
                 var query = mapLayerView.layer.createQuery();
                 query.geometry = sketchGeometry;
                 query.distance = bufferSize;
@@ -355,7 +377,8 @@ require([
                 position: "top-right"
             });
             view.ui.add([queryDiv], "bottom-left");
-            view.ui.add([resultDiv], "bottom-left")
+            view.ui.add([resultDiv], "bottom-left");
+            view.ui.add([drawDiv], "bottom-left");
 
             // Add everything to the map
             map.add(surveyGroup);
