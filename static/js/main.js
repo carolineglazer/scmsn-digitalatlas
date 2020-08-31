@@ -102,7 +102,6 @@ require([
                 })
             };
 
-            
             // Use SketchViewModel to draw polygons that are used as a query
             var sketchGeometry = null;
             var sketchViewModel = new SketchViewModel({
@@ -278,20 +277,78 @@ require([
                 }, console.error);
             }
 
-            // Popup templates (*not* popupTemplate)
+            // Popup templates
             var templateSurveys = {
-                title: "Stewardship Survey",
-                content: "{*}" };
+                title: "Stewardship Surveys: {Activity}",
+                content: [
+                    {
+                        type: "fields",
+                        fieldInfos: [
+                            {
+                                fieldName: "PARK_NAME",
+                                fieldAlias: "Park Name"
+                            },
+                            {
+                                fieldName: "MNG_AGENCY",
+                                fieldAlias: "Managing Agency"
+                            },
+                            {
+                                fieldName: "MNG_AG_LEV",
+                                fieldAlias: "Managing Agency Level"
+                            },
+                            {
+                                fieldName: "Comments",
+                                fieldAlias: "Comments"
+                            },
+                            {
+                                fieldName: "Symbology",
+                                fieldAlias: "Level of Precision"
+                            }
+                        ]
+                    }
+                ]
+            };
             var templateEI = {
                 title: "Patch-Level Ecosystem Integrity Metrics",
-                content: "{*}" };
-            var templateNDVI = {
-                title: "NDVI",
-                content: "{*}" };
-            var templateNIRv = {
-                title: "NIRv",
-                content: "{*}" };            
-
+                content: [
+                    {
+                        type: "fields",
+                        fieldInfos: [
+                            { fieldName: "PCT",
+                              fieldAlias: "Plant Community Type" },
+                            { fieldName: "Area_hecta",
+                              fieldAlias: "Area, hectares" },
+                            { fieldName: "ENN",
+                              fieldAlias: "Euclidean Nearest Neighbor (of same PCT)" },
+                            { fieldName:"Shape Index",
+                              fieldAlias: "Shape Index" },
+                            { fieldName: "Perim_Area",
+                              fieldAlias: "Perimeter to Area Ration (meters:hectares)" },
+                            { fieldName: "vegrisk_m",
+                              fieldAlias: "Vegetation Risk to Drought, Mean" },
+                            { fieldName: "vegrisk_sd",
+                              fieldAlias: "vegetation Risk to Drought, Stdd" },
+                            { fieldName: "EssentialP",
+                              fieldAlias: "CLN2 'Essential' Percentage" },
+                            { fieldName: "NIRv_mean",
+                              fieldAlias: "NIRv, Mean" },
+                            { fieldName: "NIRv_stdd",
+                              fieldAlias: "NIRv, Stdd" },
+                            { fieldName: "NDVI_mean",
+                              fieldAlias: "NDVI, Mean" },
+                            { fieldName: "NDVI_stdd",
+                              fieldAlias: "NDVI, Stdd" },
+                            { fieldName: "nearby",
+                              fieldAlias: "# of Patches w/in 2.5km" },
+                            { fieldName: "med_ps_ex",
+                              fieldAlias: "Median Area of Patches w/in 2.5km" },
+                            { fieldName: "patch_id",
+                              fieldAlias: "Patch ID" }
+                        ]
+                    }
+                ] 
+            };
+                
             // Get feature layers for SCMSN Stewardship Survey Responses
             surveysArray = new Collection;
             for (var i = 0; i < 14; i++) {
@@ -308,14 +365,10 @@ require([
             ecosystemIntegrityArray = new Collection;
             var ei_fl2 = new TileLayer({
                 url: 'https://tiles.arcgis.com/tiles/7CRlmWNEbeCqEJ6a/arcgis/rest/services/NDVI/MapServer',
-                outFields: ["*"],
-                popupTemplate: templateNDVI
             })
             ecosystemIntegrityArray.add(ei_fl2);
             var ei_fl3 = new TileLayer({
                 url: 'https://tiles.arcgis.com/tiles/7CRlmWNEbeCqEJ6a/arcgis/rest/services/NIRv/MapServer',
-                outFields: ["*"],
-                popupTemplate: templateNIRv
             })
             ecosystemIntegrityArray.add(ei_fl3);
             var ei_fl = new FeatureLayer({
