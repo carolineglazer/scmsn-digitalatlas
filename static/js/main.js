@@ -186,7 +186,7 @@ require([
                 sketchLayer.removeAll();
                 bufferLayer.removeAll();
                 clearHighlighting();
-                //clearChart();
+                clearCharts();
                 document.getElementById("count").innerHTML = "0";
                 resultDiv.style.display = "none";
             }
@@ -223,9 +223,11 @@ require([
                 }
             }
 
-            function highlightObjects(results) {
+            function highlightObjects(result) {
                 clearHighlighting();
-                highlight = mapLayerView.highlight(results.features);
+                document.getElementById("count").innerHTML = result.features.length;
+                console.log(result.features.length);
+                highlight = mapLayerView.highlight(result.features);
             }
 
             // update the graphic with buffer
@@ -260,19 +262,123 @@ require([
             }
 
             // var yearChart = null;
-            // var materialChart = null;
+            var pctChart = null;
 
             function queryStatistics() {
-                //var statDefintions = [{}]
+                var statDefintions = [
+                    {
+                        onStatisticField: "CASE WHEN PCT = 'chaparral' THEN 1 ELSE 0 END",
+                        outStatisticFieldName: "chaparral",
+                        statisticType: "sum"
+                    },
+                    {
+                        onStatisticField: "CASE WHEN PCT = 'coastal_dunes' THEN 1 ELSE 0 END",
+                        outStatisticFieldName: "coastal_dunes",
+                        statisticType: "sum"
+                    },
+                    {
+                        onStatisticField: "CASE WHEN PCT = 'coastal_redwood_forest' THEN 1 ELSE 0 END",
+                        outStatisticFieldName: "coastal_redwood_forest",
+                        statisticType: "sum"
+                    },
+                    {
+                        onStatisticField: "CASE WHEN PCT = 'coastal_scrub' THEN 1 ELSE 0 END",
+                        outStatisticFieldName: "coastal_scrub",
+                        statisticType: "sum"
+                    },
+                    {
+                        onStatisticField: "CASE WHEN PCT = 'evergreen_montane' THEN 1 ELSE 0 END",
+                        outStatisticFieldName: "evergreen_montane",
+                        statisticType: "sum"
+                    },
+                    {
+                        onStatisticField: "CASE WHEN PCT = 'marshes_wetlands' THEN 1 ELSE 0 END",
+                        outStatisticFieldName: "marshes_wetlands",
+                        statisticType: "sum"
+                    },
+                    {
+                        onStatisticField: "CASE WHEN PCT = 'mixed_grasslands' THEN 1 ELSE 0 END",
+                        outStatisticFieldName: "mixed_grasslands",
+                        statisticType: "sum"
+                    },
+                    {
+                        onStatisticField: "CASE WHEN PCT = 'oak_woodlands' THEN 1 ELSE 0 END",
+                        outStatisticFieldName: "oak_woodlands",
+                        statisticType: "sum"
+                    },
+                    {
+                        onStatisticField: "CASE WHEN PCT = 'riparian_forests' THEN 1 ELSE 0 END",
+                        outStatisticFieldName: "riparian_forests",
+                        statisticType: "sum"
+                    },
+                ]
                 var query = mapLayerView.layer.createQuery();
                 query.geometry = sketchGeometry;
                 query.distance = bufferSize;
-                //query.outStatistics = statDefintions;
+                query.outStatistics = statDefintions;
                 return mapLayerView.queryFeatures(query).then(function (result) {
                     var allStats = result.features[0].attributes;
-                    document.getElementById("count").innerHTML = result.features.length;
-                    //updateChart
+                    updateChart(pctChart, [
+                        allStats.chaparral,
+                        allStats.coastal_dunes,
+                        allStats.coastal_redwood_forest,
+                        allStats.coastal_scrub,
+                        allStats.evergreen_montane,
+                        allStats.marshes_wetlands,
+                        allStats.mixed_grasslands,
+                        allStats.oak_woodlands,
+                        allStats.riparian_forests
+                    ]);
                 }, console.error);
+            }
+
+            // Update the given chart with new data
+            function updateChart(chart, dataValues) {
+                chart.data.datasets[0].data = dataValues;
+                chart.update();
+            }
+
+            function createPCTChart() {
+                var pctCanvas = document.getElementById("pct-chart");
+                pctChart = new Chart(pctCanvas.getContext("2d"), {
+                    type: "doughnut",
+                    data: {
+                        labels: ["Chaparral", "Coastal Dunes", "Coastal Redwood Forest", "Coastal Scrub", "Mixed Evergreen / Montane Hardwood", "Marshes or Wetlands", "Mixed Grasslands", "Oak Woodlands", "Riparian Forests"],
+                        datasets: [
+                            {
+                                backgroundColor: [
+                                    "#9DAC40",
+                                    "#4458C3",
+                                    "#DF506C",
+                                    "#51D0E5",
+                                    "#F668E7",
+                                    "#73F056",
+                                    "#F5B08A",
+                                    "#9E698C",
+                                    "#5FFBC6"
+                                ],
+                                borderWidth: 0,
+                                data: [0,0,0,0,0,0,0,0,0]
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: false,
+                        cutoutPercentage: 35,
+                        legend: {
+                            position: "bottom"
+                        },
+                        title: {
+                            display: true,
+                            text: "Plant Cover Type (# of patches)"
+                        }
+                    }
+                });
+            }
+
+            function clearCharts() {
+                updateChart(pctChart, [0,0,0,0,0,0,0,0,0]);
+                document.getElementById("count").innerHTML = 0;
             }
 
             // Popup templates
@@ -282,26 +388,16 @@ require([
                     {
                         type: "fields",
                         fieldInfos: [
-                            {
-                                fieldName: "PARK_NAME",
-                                label: "Park Name"
-                            },
-                            {
-                                fieldName: "MNG_AGENCY",
-                                label: "Managing Agency"
-                            },
-                            {
-                                fieldName: "MNG_AG_LEV",
-                                label: "Managing Agency Level"
-                            },
-                            {
-                                fieldName: "Comments",
-                                label: "Comments"
-                            },
-                            {
-                                fieldName: "Symbology",
-                                label: "Level of Precision"
-                            }
+                            { fieldName: "PARK_NAME",
+                              label: "Park Name" },
+                            { fieldName: "MNG_AGENCY",
+                              label: "Managing Agency" },
+                            { fieldName: "MNG_AG_LEV",
+                              label: "Managing Agency Level" },
+                            { fieldName: "Comments",
+                              label: "Comments" },
+                            { fieldName: "Symbology",
+                              label: "Level of Precision" }
                         ]
                     }
                 ]
@@ -437,6 +533,8 @@ require([
             // Add sketch layer to view.map
             view.map.addMany([bufferLayer, sketchLayer]);
 
+            // Create PCT Chart
+            createPCTChart();
 
             // var MROSD_Agriculture = new FeatureLayer({
             //     url: 'https://services.arcgis.com/7CRlmWNEbeCqEJ6a/arcgis/rest/services/StewardshipSurvey_AllResponses/FeatureServer/1'
