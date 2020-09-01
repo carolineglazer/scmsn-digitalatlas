@@ -60,7 +60,7 @@ require([
         portal.load().then(function() {
 
             dom.byId('viewDiv').style.display = 'flex';
-            dom.byId('queryDiv').style.display = 'block';
+            dom.byId('drawDiv').style.display = 'block';
 
             var map = new Map({
                 basemap: "gray"
@@ -73,10 +73,36 @@ require([
                 center: [-122.106, 37.358]
             });
 
-            // Define GraphicsLayer for sketching polygons
+            // Define GraphicsLayers for sketching polygons
             var sketchLayer = new GraphicsLayer();
             var bufferLayer = new GraphicsLayer();
 
+            var mapLayer = null;
+            var mapLayerView = null;
+            var bufferSize = 0;
+
+            // Assisgn mapLayer (the layer which is queried after a polygon is drawn) once drawDiv is clicked
+            document
+                .getElementById("drawDiv")
+                .addEventListener("click", drawDivClickHandler);
+            function drawDivClickHandler(event) {
+                drawDiv.style.display = "none";
+                queryDiv.style.display = "block";
+                mapLayer = map.allLayers.find(function(layer) {
+                    return layer.title === document.getElementById("query-layer").value;
+                });
+                view.whenLayerView(mapLayer).then(function (layerView) {
+                    mapLayerView = layerView;
+                    mapLayer.outFields = ["*"];
+                })
+                .catch(function(){
+                    document.getElementById("drawDiv").style.display = "block";
+                    alert("Please wait for map to finish loading");
+                    document.getElementById("queryDiv").style.display = "none";
+                })
+            };
+
+            // Use SketchViewModel to draw polygons that are used as a query
             var sketchGeometry = null;
             var sketchViewModel = new SketchViewModel({
                 layer: sketchLayer,
@@ -102,10 +128,6 @@ require([
                 }
             });
 
-            var mapLayer = null;
-            var mapLayerView = null;
-            var bufferSize = 0;
-
             // draw geometry buttons - use the selected geometry to sktech
             document
                 .getElementById("point-geometry-button")
@@ -116,16 +138,14 @@ require([
             document
                 .getElementById("polygon-geometry-button")
                 .addEventListener("click", geometryButtonsClickHandler);
+            document
+                .getElementById("toggle")
+                .addEventListener("click", function() {
+                    document.getElementById("queryDiv").style.display = "none";
+                    document.getElementById("drawDiv").style.display = "block";
+                });
             function geometryButtonsClickHandler(event) {
                 var geometryType = event.target.value;
-                // Assisgn mapLayer (the layer which is queried after a polygon is drawn) once user click on a geometry type
-                mapLayer = map.allLayers.find(function (layer) {
-                    return layer.title === "Ecosystem Integrity Indicators 08122020 - All PCTs";
-                });
-                mapLayer.outFields = ["*"]
-                view.whenLayerView(mapLayer).then(function (layerView) {
-                    mapLayerView = layerView;
-                })
                 clearGeometry();
                 sketchViewModel.create(geometryType);
             }
@@ -251,25 +271,82 @@ require([
                 return mapLayerView.queryFeatures(query).then(function (result) {
                     var allStats = result.features[0].attributes;
                     document.getElementById("count").innerHTML = result.features.length;
-                    console.log(result.features);
                     //updateChart
                 }, console.error);
             }
 
-            // Popup templates (*not* popupTemplate)
+            // Popup templates
             var templateSurveys = {
-                title: "Stewardship Survey",
-                content: "{*}" };
+                title: "Stewardship Surveys: {Activity}",
+                content: [
+                    {
+                        type: "fields",
+                        fieldInfos: [
+                            {
+                                fieldName: "PARK_NAME",
+                                label: "Park Name"
+                            },
+                            {
+                                fieldName: "MNG_AGENCY",
+                                label: "Managing Agency"
+                            },
+                            {
+                                fieldName: "MNG_AG_LEV",
+                                label: "Managing Agency Level"
+                            },
+                            {
+                                fieldName: "Comments",
+                                label: "Comments"
+                            },
+                            {
+                                fieldName: "Symbology",
+                                label: "Level of Precision"
+                            }
+                        ]
+                    }
+                ]
+            };
             var templateEI = {
                 title: "Patch-Level Ecosystem Integrity Metrics",
-                content: "{*}" };
-            var templateNDVI = {
-                title: "NDVI",
-                content: "{*}" };
-            var templateNIRv = {
-                title: "NIRv",
-                content: "{*}" };            
-
+                content: [
+                    {
+                        type: "fields",
+                        fieldInfos: [
+                            { fieldName: "PCT",
+                              label: "Plant Community Type" },
+                            { fieldName: "Area_hecta",
+                              label: "Area, hectares" },
+                            { fieldName: "ENN",
+                              label: "Euclidean Nearest Neighbor (of same PCT)" },
+                            { fieldName:"Shape Index",
+                              label: "Shape Index" },
+                            { fieldName: "Perim_Area",
+                              label: "Perimeter to Area Ration (meters:hectares)" },
+                            { fieldName: "vegrisk_m",
+                              label: "Vegetation Risk to Drought, Mean" },
+                            { fieldName: "vegrisk_sd",
+                              label: "vegetation Risk to Drought, Stdd" },
+                            { fieldName: "EssentialP",
+                              label: "CLN2 'Essential' Percentage" },
+                            { fieldName: "NIRv_mean",
+                              label: "NIRv, Mean" },
+                            { fieldName: "NIRv_stdd",
+                              label: "NIRv, Stdd" },
+                            { fieldName: "NDVI_mean",
+                              label: "NDVI, Mean" },
+                            { fieldName: "NDVI_stdd",
+                              label: "NDVI, Stdd" },
+                            { fieldName: "nearby",
+                              label: "# of Patches w/in 2.5km" },
+                            { fieldName: "med_ps_ex",
+                              label: "Median Area of Patches w/in 2.5km" },
+                            { fieldName: "patch_id",
+                              label: "Patch ID" }
+                        ]
+                    }
+                ] 
+            };
+                
             // Get feature layers for SCMSN Stewardship Survey Responses
             surveysArray = new Collection;
             for (var i = 0; i < 14; i++) {
@@ -286,14 +363,10 @@ require([
             ecosystemIntegrityArray = new Collection;
             var ei_fl2 = new TileLayer({
                 url: 'https://tiles.arcgis.com/tiles/7CRlmWNEbeCqEJ6a/arcgis/rest/services/NDVI/MapServer',
-                outFields: ["*"],
-                popupTemplate: templateNDVI
             })
             ecosystemIntegrityArray.add(ei_fl2);
             var ei_fl3 = new TileLayer({
                 url: 'https://tiles.arcgis.com/tiles/7CRlmWNEbeCqEJ6a/arcgis/rest/services/NIRv/MapServer',
-                outFields: ["*"],
-                popupTemplate: templateNIRv
             })
             ecosystemIntegrityArray.add(ei_fl3);
             var ei_fl = new FeatureLayer({
@@ -355,7 +428,8 @@ require([
                 position: "top-right"
             });
             view.ui.add([queryDiv], "bottom-left");
-            view.ui.add([resultDiv], "bottom-left")
+            view.ui.add([resultDiv], "bottom-left");
+            view.ui.add([drawDiv], "bottom-left");
 
             // Add everything to the map
             map.add(surveyGroup);

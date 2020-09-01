@@ -23,8 +23,18 @@
     
     <!-- for the map -->
     <div id="viewDiv" style="display: none;"></div>
+    <div id="drawDiv" class="esri-widget"><b>Query by geometry &uarr;</b></div>
+    
     <div id="queryDiv" class="esri-widget">
-        <b>Query by geometry</b><br />
+        <div id="toggle"><b>Query by geometry &darr;</b></div><br />
+        <br />Select a layer to query:
+        <div id = "query-options">
+        <select name="query-layer" id="query-layer">
+            <option value="Ecosystem Integrity Indicators 08122020 - All PCTs">Plant Community Type patches</option>
+            <!-- <option value="">Stewardship Survey data</option> -->
+        </select>
+        </div>
+        <div class="layer-options">
         <br />Draw a geometry to query by:
         <div class="geometry-options">
             <button

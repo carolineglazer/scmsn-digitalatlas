@@ -38,13 +38,25 @@ body,
 }
 
 #queryDiv,
-#resultDiv {
+#resultDiv,
+#drawDiv {
     min-width: 250px;
     font-size: 14px;
     padding: 10px;
     display: none;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+#drawDiv {
+    background-color: gray;
+    color: white;
+}
+
+#toggle {
+    background-color: gray;
+    color: white;
+    padding: 5px 10px;
 }
 
 .geometry-options {
