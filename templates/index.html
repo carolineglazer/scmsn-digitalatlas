@@ -7,6 +7,8 @@
     <title>SCMSN Stewardship Layers</title>
     <link rel="stylesheet" href="https://js.arcgis.com/4.16/esri/themes/light/main.css">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/main.css') }}">
+    <!-- Load the Chart.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
     <script src="https://js.arcgis.com/4.16/"></script>
     <script src="{{ url_for('static',filename='js/main.js') }}"></script>
 </head>
@@ -75,10 +77,7 @@
         </div>
         <div class="charts">
           <div>
-            <canvas id="year-chart" height="250" width="260" />
-          </div>
-          <div>
-            <canvas id="material-chart" width="250" height="300" />
+            <canvas id="pct-chart" width="250" height="500" />
           </div>
         </div>
     </div>
