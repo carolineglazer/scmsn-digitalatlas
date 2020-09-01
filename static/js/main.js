@@ -286,23 +286,23 @@ require([
                         fieldInfos: [
                             {
                                 fieldName: "PARK_NAME",
-                                fieldAlias: "Park Name"
+                                label: "Park Name"
                             },
                             {
                                 fieldName: "MNG_AGENCY",
-                                fieldAlias: "Managing Agency"
+                                label: "Managing Agency"
                             },
                             {
                                 fieldName: "MNG_AG_LEV",
-                                fieldAlias: "Managing Agency Level"
+                                label: "Managing Agency Level"
                             },
                             {
                                 fieldName: "Comments",
-                                fieldAlias: "Comments"
+                                label: "Comments"
                             },
                             {
                                 fieldName: "Symbology",
-                                fieldAlias: "Level of Precision"
+                                label: "Level of Precision"
                             }
                         ]
                     }
@@ -315,35 +315,35 @@ require([
                         type: "fields",
                         fieldInfos: [
                             { fieldName: "PCT",
-                              fieldAlias: "Plant Community Type" },
+                              label: "Plant Community Type" },
                             { fieldName: "Area_hecta",
-                              fieldAlias: "Area, hectares" },
+                              label: "Area, hectares" },
                             { fieldName: "ENN",
-                              fieldAlias: "Euclidean Nearest Neighbor (of same PCT)" },
+                              label: "Euclidean Nearest Neighbor (of same PCT)" },
                             { fieldName:"Shape Index",
-                              fieldAlias: "Shape Index" },
+                              label: "Shape Index" },
                             { fieldName: "Perim_Area",
-                              fieldAlias: "Perimeter to Area Ration (meters:hectares)" },
+                              label: "Perimeter to Area Ration (meters:hectares)" },
                             { fieldName: "vegrisk_m",
-                              fieldAlias: "Vegetation Risk to Drought, Mean" },
+                              label: "Vegetation Risk to Drought, Mean" },
                             { fieldName: "vegrisk_sd",
-                              fieldAlias: "vegetation Risk to Drought, Stdd" },
+                              label: "vegetation Risk to Drought, Stdd" },
                             { fieldName: "EssentialP",
-                              fieldAlias: "CLN2 'Essential' Percentage" },
+                              label: "CLN2 'Essential' Percentage" },
                             { fieldName: "NIRv_mean",
-                              fieldAlias: "NIRv, Mean" },
+                              label: "NIRv, Mean" },
                             { fieldName: "NIRv_stdd",
-                              fieldAlias: "NIRv, Stdd" },
+                              label: "NIRv, Stdd" },
                             { fieldName: "NDVI_mean",
-                              fieldAlias: "NDVI, Mean" },
+                              label: "NDVI, Mean" },
                             { fieldName: "NDVI_stdd",
-                              fieldAlias: "NDVI, Stdd" },
+                              label: "NDVI, Stdd" },
                             { fieldName: "nearby",
-                              fieldAlias: "# of Patches w/in 2.5km" },
+                              label: "# of Patches w/in 2.5km" },
                             { fieldName: "med_ps_ex",
-                              fieldAlias: "Median Area of Patches w/in 2.5km" },
+                              label: "Median Area of Patches w/in 2.5km" },
                             { fieldName: "patch_id",
-                              fieldAlias: "Patch ID" }
+                              label: "Patch ID" }
                         ]
                     }
                 ] 
