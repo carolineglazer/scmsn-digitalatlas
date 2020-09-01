@@ -89,7 +89,7 @@ require([
                 drawDiv.style.display = "none";
                 queryDiv.style.display = "block";
                 mapLayer = map.allLayers.find(function(layer) {
-                    return layer.title === "Ecosystem Integrity Indicators 08122020 - All PCTs";
+                    return layer.title === document.getElementById("query-layer").value;
                 });
                 view.whenLayerView(mapLayer).then(function (layerView) {
                     mapLayerView = layerView;
@@ -264,7 +264,6 @@ require([
 
             function queryStatistics() {
                 //var statDefintions = [{}]
-                console.log("mapLayerView: "+mapLayerView);
                 var query = mapLayerView.layer.createQuery();
                 query.geometry = sketchGeometry;
                 query.distance = bufferSize;
@@ -272,7 +271,6 @@ require([
                 return mapLayerView.queryFeatures(query).then(function (result) {
                     var allStats = result.features[0].attributes;
                     document.getElementById("count").innerHTML = result.features.length;
-                    console.log(result.features);
                     //updateChart
                 }, console.error);
             }
