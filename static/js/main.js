@@ -89,7 +89,7 @@ require([
                 drawDiv.style.display = "none";
                 queryDiv.style.display = "block";
                 mapLayer = map.allLayers.find(function(layer) {
-                    return layer.title === document.getElementById("query-layer").value;
+                        return layer.title === document.getElementById("query-layer").value;
                 });
                 view.whenLayerView(mapLayer).then(function (layerView) {
                     mapLayerView = layerView;
@@ -143,6 +143,8 @@ require([
                 .addEventListener("click", function() {
                     document.getElementById("queryDiv").style.display = "none";
                     document.getElementById("drawDiv").style.display = "block";
+                    clearGeometry();
+                    clearHighlighting();
                 });
             function geometryButtonsClickHandler(event) {
                 var geometryType = event.target.value;
