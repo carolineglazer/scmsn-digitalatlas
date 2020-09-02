@@ -228,7 +228,6 @@ require([
             function highlightObjects(result) {
                 clearHighlighting();
                 document.getElementById("count").innerHTML = result.features.length;
-                console.log(result.features.length);
                 highlight = mapLayerView.highlight(result.features);
             }
 
@@ -478,42 +477,64 @@ require([
             })
             ecosystemIntegrityArray.add(ei_fl);            
 
-            // Initialize the layer list widget
-            var layerList = new LayerList({
-                view: view,
-                listItemCreatedFunction: function(event) {
-                    var item = event.item;
-                    // build legends for all listitems within groups
-                    if (item.layer.type == "feature") {
-                        // open legend for survey layers
-                        if (item.layer.title.startsWith("Ecosystem Integrity Indicator")) {
-                            item.panel = {
-                                content: "legend",
-                                open: true
-                            }
-                        // close legend otherwise
-                        } else {
-                            item.panel = {
-                                content: "legend",
-                                open: false
-                            }
+            // layerList
+            view.when(function() {
+                // Kinda hacky way to hide two untitled layers (mapLayer and mapLayerView) from layerList
+                var hideLayer = view.map.layers.flatten(function(item){
+                    return item.layers || item.sublayers;
+                }).find(function(layer){
+                    return layer.title == null;
+                });
+                hideLayer.listMode = "hide";
+                hideLayer.title = "hidden";
+                var hideLayer = view.map.layers.flatten(function(item){
+                    return item.layers || item.sublayers;
+                }).find(function(layer){
+                    return layer.title == null;
+                });
+                hideLayer.listMode = "hide";
+                // Initialize the layer list widget
+                var layerList = new LayerList({
+                    view: view,
+                    listItemCreatedFunction: function(event) {
+                        var item = event.item;
+                        // build legends for all listitems within groups
+                        if (item.layer.type == "feature") {
+                            // open legend for survey layers
+                            if (item.layer.title.startsWith("Ecosystem Integrity Indicator")) {
+                                item.panel = {
+                                    content: "legend",
+                                    open: true
+                                }
+                            // close legend otherwise
+                            } else {
+                                item.panel = {
+                                    content: "legend",
+                                    open: false
+                                }
+                            };
                         };
-                    };
-                    // Stewardship Surveys layers not visible by default
-                    if (item.layer.type == "group" && item.title == "Stewardship Surveys") {
-                        item.visible = false;
+                        // Stewardship Surveys layers not visible by default
+                        if (item.layer.type == "group" && item.title == "Stewardship Surveys") {
+                            item.visible = false;
+                        }
+                        // NDVI and NIRv layers not visible by default
+                        if (item.layer.title == "NDVI" || item.layer.title == "NIRv") {
+                            item.visible = false;
+                        }
+                        // Fix the titles for Stewardship Survey Aggregated Data
+                        // if (item.layer.title.startsWith("Stewardship Data Aggregated") && item.layer.title.length > 54) {
+                        //     item.layer.title = item.layer.title.substring(54);
+                        //     console.log(item.layer.title)
+                        // };   
                     }
-                    // NDVI and NIRv layers not visible by default
-                    if (item.layer.title == "NDVI" || item.layer.title == "NIRv") {
-                        item.visible = false;
-                    }
-                    // Fix the titles for Stewardship Survey Aggregated Data
-                    // if (item.layer.title.startsWith("Stewardship Data Aggregated") && item.layer.title.length > 54) {
-                    //     item.layer.title = item.layer.title.substring(54);
-                    //     console.log(item.layer.title)
-                    // };   
-                }
+                });
+                // Add layerList to the UI
+                view.ui.add(layerList, {
+                    position: "top-right"
+                });
             });
+            
 
             // Define group layers
             var surveyGroup = new GroupLayer({
@@ -525,10 +546,7 @@ require([
                 layers: ecosystemIntegrityArray,
             });
 
-            // Add layer list widget below other elements in the top right corner of the view
-            view.ui.add(layerList, {
-                position: "top-right"
-            });
+            // Add all query/result/draw divs to the page
             view.ui.add([queryDiv], "bottom-left");
             view.ui.add([resultDiv], "bottom-left");
             view.ui.add([drawDiv], "bottom-left");
