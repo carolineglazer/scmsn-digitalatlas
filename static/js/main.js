@@ -418,7 +418,7 @@ require([
                             { fieldName:"Shape Index",
                               label: "Shape Index" },
                             { fieldName: "Perim_Area",
-                              label: "Perimeter to Area Ration (meters:hectares)" },
+                              label: "Perimeter to Area Ratio (meters:hectares)" },
                             { fieldName: "vegrisk_m",
                               label: "Vegetation Risk to Drought, Mean" },
                             { fieldName: "vegrisk_sd",
