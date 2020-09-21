@@ -10,6 +10,10 @@ body,
 }
 
 .action {
+    cursor: pointer;
+}
+
+#sign-in {
     font-size: x-large;
     color: white;
     background-color: #007a52;
@@ -18,7 +22,7 @@ body,
     cursor: pointer;
 }
 
-.action:hover {
+#sign-in:hover {
     text-decoration: underline;
 }
 
