@@ -10,10 +10,21 @@ body,
 }
 
 .action {
+    font-size: x-large;
     color: white;
-    font-weight: bold;
+    background-color: #007a52;
+    padding: 10px;
+    border-radius: 5px;
     cursor: pointer;
+}
+
+.action:hover {
     text-decoration: underline;
+}
+
+#publicmap {
+    font-size: smaller;
+    color: black;
 }
 
 #anonymousPanel {
@@ -22,11 +33,7 @@ body,
     top: 40%;
     width: 25%;
     margin: 0 auto;
-    padding: 20px; 
     text-align: center;
-    background-color: black;
-    border-radius: 5px;
-    color: white;
 }
 
 #personalizedPanel {

@@ -10,20 +10,10 @@
     <!-- Load the Chart.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
     <script src="https://js.arcgis.com/4.16/"></script>
-    <script src="{{ url_for('static',filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/publicmap.js') }}"></script>
 </head>
 
 <body>
-    <div id="anonymousPanel">
-        <span id="sign-in" class="action">Sign in to view the SCMSN Digital Atlas.</span>
-        <p><a href="/publicmap" id="publicmap">Or view a public sample.</a></p>
-    </div>
-
-    <div id="personalizedPanel">
-        Welcome <span id="userId" style="font-weight: bold;"></span> &nbsp;-&nbsp;
-        <span id="sign-out" class="action">Sign Out</span>
-    </div>
-    
     <!-- for the map -->
     <div id="viewDiv" style="display: none;"></div>
     <div id="drawDiv" class="esri-widget"><b>Query by geometry &uarr;</b></div>
